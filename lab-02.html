@@ -9,9 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="Team Name: Izzy, User2, User3, User4" />
+<meta name="author" content="Team Name: Izzy" />
 
-<meta name="date" content="2026-10-11" />
+<meta name="date" content="2026-10-12" />
 
 <title>Lab 02 - Global plastic waste</title>
 
@@ -351,8 +351,8 @@ display: none;
 
 
 <h1 class="title toc-ignore">Lab 02 - Global plastic waste</h1>
-<h4 class="author">Team Name: Izzy, User2, User3, User4</h4>
-<h4 class="date">2026-10-11</h4>
+<h4 class="author">Team Name: Izzy</h4>
+<h4 class="date">2026-10-12</h4>
 
 </div>
 
@@ -366,12 +366,9 @@ library(readxl)</code></pre>
 <h2>Load &amp; join data sets</h2>
 <pre class="r"><code>data1 &lt;- read_csv(&quot;data/mismanaged-plastic-waste-per-capita.csv&quot;)
 
-
 data2 &lt;- read_csv2(&quot;data/per-capita-ocean-plastic-waste.txt&quot;)
 
-
 data3 &lt;- read_tsv(&quot;data/UN_country_population.tsv&quot;)
-
 
 data4 &lt;- read_excel(&quot;data/UN_country_region.xlsx&quot;)</code></pre>
 <pre class="r"><code>plastic_data_all &lt;- data1
@@ -410,15 +407,60 @@ plastic_data_all &lt;- data4 %&gt;%
 <h2>Exercises</h2>
 <div id="ex-1." class="section level3">
 <h3>Ex 1.</h3>
-<pre class="r"><code># Write your code here to answer exercise 1</code></pre>
+<pre class="r"><code>plastic_data_all %&gt;% count(region, sort=TRUE)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                              n
+##   &lt;chr&gt;                           &lt;int&gt;
+## 1 Africa                             43
+## 2 Asia                               39
+## 3 Latin America and The Caribbean    34
+## 4 Europe                             31
+## 5 Oceania                            10
+## 6 North America                       2</code></pre>
 </div>
 <div id="ex-2." class="section level3">
 <h3>Ex 2.</h3>
-<pre class="r"><code># Write your code here to answer exercise 2</code></pre>
+<pre class="r"><code>plastic_data_all &lt;- plastic_data_all %&gt;%
+  mutate(total_mismanaged_plastic = mismanaged_plastic * population)
+plastic_data_all %&gt;% 
+  group_by(region) %&gt;%
+  summarise(avg_total = mean(total_mismanaged_plastic))</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                          avg_total
+##   &lt;chr&gt;                               &lt;dbl&gt;
+## 1 Africa                            320729.
+## 2 Asia                             1026059.
+## 3 Europe                             38180.
+## 4 Latin America and The Caribbean   193450.
+## 5 North America                     147190.
+## 6 Oceania                            14577.</code></pre>
 </div>
 <div id="ex-3." class="section level3">
 <h3>Ex 3.</h3>
-<pre class="r"><code># Write your code here to answer exercise 3</code></pre>
+<pre class="r"><code>plastic_data_all &lt;- plastic_data_all %&gt;%
+  mutate(pct_mismanaged_plastic_ocean = mismanaged_plastic_ocean / mismanaged_plastic)
+
+plastic_data_all %&gt;% 
+  drop_na()%&gt;%
+  group_by(region) %&gt;%
+  summarise(med_pct = median(pct_mismanaged_plastic_ocean))%&gt;%
+  arrange(med_pct)</code></pre>
+<pre><code>## # A tibble: 6 × 2
+##   region                          med_pct
+##   &lt;chr&gt;                             &lt;dbl&gt;
+## 1 Africa                          0.00526
+## 2 Europe                          0.00846
+## 3 North America                   0.00959
+## 4 Asia                            0.00974
+## 5 Oceania                         0.0158 
+## 6 Latin America and The Caribbean 0.0307</code></pre>
+<pre class="r"><code>plastic_data_all %&gt;% filter(code == &quot;SOM&quot;)</code></pre>
+<pre><code>## # A tibble: 1 × 8
+##   code  region population mismanaged_plastic_ocean name    mismanaged_plastic
+##   &lt;chr&gt; &lt;chr&gt;       &lt;dbl&gt;                    &lt;dbl&gt; &lt;chr&gt;                &lt;dbl&gt;
+## 1 SOM   Africa     15690.                        0 Somalia                  0
+## # ℹ 2 more variables: total_mismanaged_plastic &lt;dbl&gt;,
+## #   pct_mismanaged_plastic_ocean &lt;dbl&gt;</code></pre>
 </div>
 <div id="ex-4." class="section level3">
 <h3>Ex 4.</h3>
